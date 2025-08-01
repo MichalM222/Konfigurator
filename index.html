@@ -1,0 +1,95 @@
+
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Konfigurator Kubka Psibzik</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
+  <style>
+    body { font-family: sans-serif; padding: 20px; background: #f2f2f2; }
+    h2 { text-align: center; }
+    canvas { border: 1px solid #ccc; display: block; margin: 0 auto; }
+    #info { text-align: center; margin-top: 10px; }
+  </style>
+</head>
+<body>
+
+<h2>🖌️ Personalizuj swój kubek – wybierz rasę</h2>
+<div id="info">
+  <label for="breedSelect">Wybierz rasę psa: </label>
+  <select id="breedSelect">
+    <option value="Beagle">Beagle</option>
+    <option value="Mops">Mops</option>
+    <option value="Akita-Inu">Akita Inu</option>
+    <option value="Shih-Tzu">Shih Tzu</option>
+    <option value="Labrador">Labrador</option>
+  </select>
+</div>
+
+<canvas id="kubekPreview" width="600" height="400"></canvas>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const canvas = new fabric.Canvas('kubekPreview');
+
+  // Tło kubka
+  const backgroundUrl = 'https://www.gadzetyreklamowe.pl/wp-content/uploads/2023/10/kubek-ceramiczny-do-sublimacji-sublim-MO8040-06.jpg';
+
+  fabric.Image.fromURL(backgroundUrl, function(img) {
+    img.scaleToWidth(600);
+    canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
+  });
+
+  const textPrefix = new fabric.Text('Kiedyś byłam normalna, później w domu pojawił się', {
+    left: 300,
+    top: 300,
+    fontSize: 20,
+    fill: '#000',
+    originX: 'center'
+  });
+
+  const textBreed = new fabric.Text('', {
+    left: 300,
+    top: 330,
+    fontSize: 28,
+    fill: '#000',
+    fontWeight: 'bold',
+    originX: 'center'
+  });
+
+  canvas.add(textPrefix);
+  canvas.add(textBreed);
+
+  let breedImage = null;
+
+  const select = document.getElementById('breedSelect');
+
+  select.addEventListener('change', function () {
+    const breed = select.value;
+    textBreed.text = breed;
+    canvas.renderAll();
+
+    if (breedImage) {
+      canvas.remove(breedImage);
+    }
+
+    const imgUrl = 'https://psibzik.pl/userdata/public/gfx/rasy/' + encodeURIComponent(breed) + '.png';
+
+    fabric.Image.fromURL(imgUrl, function(img) {
+      img.scaleToWidth(180);
+      img.set({ left: 210, top: 120 });
+      breedImage = img;
+      canvas.add(breedImage);
+      canvas.bringToFront(textPrefix);
+      canvas.bringToFront(textBreed);
+    });
+  });
+
+  // Inicjalizuj z pierwszą wartością
+  const event = new Event('change');
+  select.dispatchEvent(event);
+});
+</script>
+
+</body>
+</html>
